@@ -6,12 +6,10 @@
 #+options: toc:nil
 #+property: header-args :results silent
 
-** Table of contents
 
 *NOTE*. This README applies for UNIX systems, it may be different in other OS such as Windows.
 
 ** Table of contents :TOC:
-  - [[#table-of-contents][Table of contents]]
   - [[#dependencies][Dependencies]]
   - [[#usage][Usage]]
   - [[#configmk][config.mk]]
