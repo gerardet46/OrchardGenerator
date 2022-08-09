@@ -6,11 +6,16 @@
 #+options: toc:nil
 #+property: header-args :results silent
 
+** Table of contents
+
 *NOTE*. This README applies for UNIX systems, it may be different in other OS such as Windows.
 
-Here there are two programs written in C:
-- =generate.c=: it generates all orchard networks with some conditions.
-- =randgen.c=: generates some random orchard networks.
+** Table of contents :TOC:
+  - [[#table-of-contents][Table of contents]]
+  - [[#dependencies][Dependencies]]
+  - [[#usage][Usage]]
+  - [[#configmk][config.mk]]
+  - [[#c-files][C Files]]
 
 ** Dependencies
 - =make= and a C compiler (=gcc= for example) for compiling.
@@ -59,4 +64,5 @@ To check function definitions, go to the header files (/.h/), which are implemen
   | printNothing | do nothing with the output               |
   | printSeq     | print to /stdout/ the generated CPS        |
   | printPol     | print to /stdout/ the generated polynomial |
+  | printTexPol  | Same in LaTeX format                     |
 
