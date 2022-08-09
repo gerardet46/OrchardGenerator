@@ -1,0 +1,11 @@
+*.copy
+__pycache__
+
+# org files
+recomptes.org
+prova.org
+
+# binary/executable files
+gensh
+generate
+randgen
