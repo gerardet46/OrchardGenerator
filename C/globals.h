@@ -28,10 +28,6 @@
 #define OUTPUT_ALL 0
 #endif
 
-#ifndef COUNT_SECONDS
-#define COUNT_SECONDS 0
-#endif
-
 #ifndef PARALLEL
 #define PARALLEL 1
 #endif

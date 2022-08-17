@@ -181,20 +181,11 @@ int main(int argc, char *argv[]) {
     exit(1);
 #endif
 
-#if COUNT_SECONDS == 1
-    int t0 = time(NULL);
-#endif
-
     generate();
-
-#if COUNT_SECONDS == 1
-    int t1 = time(NULL);
-    printf("%d seconds\n", t1 - t0);
-#endif
 
     // print total count
 #if OUTPUT_TOTAL != 0
-    printf("%d\n", count);
+    printf("%ld\n", count);
 #endif
 
     return 0;
