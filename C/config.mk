@@ -26,9 +26,6 @@ OUTPUT_TOTAL = 1
 # 0 for output only final sequence
 OUTPUT_ALL = 0
 
-# 1 for counting total seconds
-COUNT_SECONDS = 0
-
 # 1 for parallel execution (multithread)
 PARALLEL = 0
 
