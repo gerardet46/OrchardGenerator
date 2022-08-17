@@ -11,7 +11,7 @@
 #include "polynomial.h"
 #include "sequence.h"
 
-int count = 0;
+unsigned long count = 0;
 
 void generate();
 void findSequences(sequence *S, polynomial *p, int *L, int Lcount);
