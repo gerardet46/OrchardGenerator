@@ -110,7 +110,7 @@ void generate() {
 #endif
 
     // free pointers
-	free(p);
+    free(p);
     free(S);
 }
 
