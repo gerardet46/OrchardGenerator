@@ -1,0 +1,17 @@
+#+title:  Orchard generator using reducible pairs
+#+author: Gerard
+
+#+HTML_HEAD_EXTRA: <style> .TOC_2_org { display: none; } </style> \
+#+options: toc:nil
+#+property: header-args :results silent
+
+There are the two versions, in =Python= and =C=, and basically do the same.
+
+In either case is needed any dependency.
+
+To use the =C= version, edit the /definitions/ of the first lines to adjust the parameters and then compile:
+#+begin_src bash
+gcc generate.c -o generate
+#+end_src
+
+And then execute =generate=.
