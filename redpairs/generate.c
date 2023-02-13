@@ -43,7 +43,7 @@ int lt(int a, int b, int c, int d) { return a < c || (a == c && b < d); }
 
 int addpair(int a, int b, int isret, int k, int *chleaf, int *chstate) {
     int r = isret ? addretcherry(a, b, k, chleaf, chstate) : addcherry(a, b, k);
-	r = r || C[k] == 1 || lt(a, b, R1[k][1], R2[k][1]);
+    r     = r || C[k] == 1 || lt(a, b, R1[k][1], R2[k][1]);
     if (r) {
         // set first pair (a, b) (isret)
         R1[k][0] = a;
@@ -58,7 +58,7 @@ int addcherry(int a, int b, int k) {
     C[k]         = 1; // set first pair as (a, b)
 
     // transform all pairs
-	for (int i = 0; i < C[k - 1]; i++) {
+    for (int i = 0; i < C[k - 1]; i++) {
         // compare with first survival
         if (!smallest && C[k] > 1) {
             if (lt(a, b, R1[k][1], R2[k][1]))
@@ -72,7 +72,7 @@ int addcherry(int a, int b, int k) {
         int ci = R3[k - 1][i];
 
         // Case 1: remains invariant
-		if (ai != b && bi != b) {
+        if (ai != b && bi != b) {
             R1[k][C[k]] = ai;
             R2[k][C[k]] = bi;
             R3[k][C[k]] = ci;
@@ -121,7 +121,7 @@ int addretcherry(int a, int b, int k, int *chleaf, int *chstate) {
                 Xstate[ai - 1] = 3;
             }
         }
-		// Case 3: do nothing
+        // Case 3: do nothing
     }
     // check if flip persists
     if (flip >= 0)
@@ -154,7 +154,7 @@ void generate(int k) {
         int isret = Xstate[a - 1] > 0; // 1: reticulated-cherry, 0: cherry
 
         // check if we are forced to add a cherry
-		if (isret && L - N == k - Xcount)
+        if (isret && L - N == k - Xcount)
             continue;
 
         for (int b = 1 + a * (!isret); b <= N; b++) {
@@ -169,13 +169,12 @@ void generate(int k) {
                 S[2 * k]     = a;
                 S[2 * k + 1] = b;
 #endif
-
-				int stA = Xstate[a - 1], stB = Xstate[b - 1];
+                int stA = Xstate[a - 1], stB = Xstate[b - 1];
                 Xstate[a - 1] = 1 + isret;
                 Xstate[b - 1] = 1 + 2 * isret;
                 Xcount += !isret;
 
-				if (k + 1 == L) { // end
+                if (k + 1 == L) { // end
                     count++;
                     printSeq(k + 1);
                 } else { // continue
@@ -184,18 +183,18 @@ void generate(int k) {
                         count++;
                         printSeq(k + 1);
                     }
-#endif // ALL
+#endif
                     generate(k + 1); // keep going
                 }
-				// undo changes
-                Xstate[a - 1] = stA;
+                // undo changes
+				Xstate[a - 1] = stA;
                 Xstate[b - 1] = stB;
                 Xcount -= !isret;
             }
             // undo changes
             Xstate[chleaf - 1] = chstate;
         }
-	}
+    }
 }
 
 void printSeq(int k) {
@@ -225,7 +224,7 @@ int main(int argc, char *argv[]) {
 #endif
 #ifdef ALL
 #if N == 2
-		printSeq(1);
+        printSeq(1);
         count++;
 #endif
 #endif
