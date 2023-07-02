@@ -1,11 +1,50 @@
-#+title:  Orchards Generator
+#+title:  Orchard generator using reducible pairs
 #+author: Gerard
-#+email:  gerard.ribas1@estudiant.uib.cat
 
-#+HTML_HEAD_EXTRA: <style> .TOC_2_org { display: none; } </style> \
 #+options: toc:nil
-#+property: header-args :results silent
 
-** Folders
-- =polinomial/=: Generation using the polynomial (not updated).
-- =redpairs/=: Generation without the polynomial, using the reducible pairs.
+** Dependencies
+Just a C compiler, for example =gcc=, which is the one used in the helper script =generate.sh=
+
+The code is meant to be recompiled when a change in its parameters is needed, keeping the program cleaner and faster.
+
+** Files
+This project contain the following files/folders:
+
+- =generator.c=: the C code to generate orchard network.
+- =consts.h=: parameters for the generator.
+- =generate.sh=: helper script to change /consts.h/, recompile and execute /generate.c/.
+- =counts.csv=: table with counts.
+- =nets/=: text files with all generated MCRSs with at most /r/ reticulations.
+
+** Usage of the generator
+There are two ways to use the generator.
+
+*** Manually
+Change the parameters in =consts.h=, and then execute
+#+begin_src bash
+  gcc -O3 -pipe -o generator generator.c  # compile (and optimize)
+  ./generator  # execute
+#+end_src
+
+*** Using the helper script
+Execute the script =generate.sh= (with a POSIX compliant shell, like bash), which changes the parameters, recompiles and executes.
+
+The options that can be passed into the script are:
+- =-h, --help=: show help message.
+- =-n n=: the number of leaves (mandatory)
+- =-r r=: the number of reticulations (mandatory)
+- =-c, --condition none|tc|sf=: the type of generated sequences. It can be *none* (default, all orchard networks), *sf* (orchard + stack-free) or *tc* (tree-child).
+- =-p, --partials=: generate all networks with *at most* (not with exactly) r reticulations.
+- =-S, --print-sequence=: print the generated MCRSs to stdout.
+- =-C, --print-count=: print the final count.
+
+  Example of use:
+#+begin_src bash
+  # show help
+  ./generate.sh --help
+  # show all orchard nets with 3 leaves and exactly 1 reticulation
+  ./generate.sh -n3 -r1 -S
+  # count all tree-child networks with 6 leaves
+  ./generate.sh -n6 -r5 -c tc -Cp
+#+end_src
