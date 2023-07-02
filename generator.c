@@ -1,33 +1,40 @@
 #include <stdio.h>
+#include "consts.h"
 
-/*** MACROS ***/
-#define N          3
-#define R          1
-#define L          (N + R - 1)
-#define COND       condTC // condNone, condTC, condSF
-#define PRINTSEQ          // uncomment to print each sequence
-#define PRINTCOUNT        // uncomment to print total count
-//#define ALL        // uncomment to include the nets with <= R reticulations
+/*
+  Constants are defined in consts.h
+  The following are mandatory
+  - N            number of leaves
+  - R            number of reticulations
+  - COND         restriction, could be none, tc, sf
 
-/*** VARIABLES ***/
-// 0: not a leaf; 2: parent is ret; 3: sibling is ret; 1 otherwise
-int Xstate[N];
+  These are optional
+  - PRINTCOUNT   print the final count
+  - PRINTSEQ     print the generated MCRS
+  - PARTIALS     generate all MCRSs with at most R reticulations
+*/
+#define L (N + R - 1)
 
+/* Enums */
+typedef enum { NONE = 0, TREE = 1, PARENT = 2, SIBLING = 3 } state;
+
+/* Variables */
 #ifdef PRINTSEQ
-int S[2 * L]; // sequence, in reversed order
+int S[2 * L]; // sequence (MCRS)
 #endif
-int R1[L][N * 2 / 3];     // first coordinate of reducible pair matrix
-int R2[L][N * 2 / 3];     // second coordinate of reducible pair matrix
-int R3[L][N * 2 / 3];     // third coordinate of reducible pair matrix
-int C[L];                 // count of red. pairs for each generation
-int Xcount;               // number of leaves in current net
+int R1[L][N * 2 / 3];     // first coordinate of ARP for each generation
+int R2[L][N * 2 / 3];     // second coordinate of ARP for each generation
+int Ch[L][N * 2 / 3];     // character of ARP for each generation
+int C[L];                 // count of ARP for each generation
+int Xcount;               // number of leaves in current network
+state Xstate[N];          // state of the network
 unsigned long long count; // total count
 
-/*** FUNCTION DECLARATIONS ***/
-int condNone(int a, int b, int isret); // generate all orchard networks
-int condSF(int a, int b, int isret);   // only stack-free
-int condTC(int a, int b, int isret);   // only tree-child
-int lt(int a, int b, int c, int d);    // checks (a,b) < (c,d)
+/* Declarations */
+int condnone(int a, int isret);     // generate all orchard networks
+int condsf(int a, int isret);       // only stack-free
+int condtc(int a, int isret);       // only tree-child
+int lt(int a, int b, int c, int d); // checks (a,b) < (c,d)
 int addpair(int a, int b, int isret, int k, int *chleaf, int *chstate);
 int addcherry(int a, int b, int k);
 int addretcherry(int a, int b, int k, int *chleaf, int *chstate);
@@ -35,10 +42,10 @@ int addsafe(int ai, int bi, int ci, int flip, int k);
 void generate(int k);
 void printSeq(int k);
 
-/*** IMPLEMENTATIONS ***/
-int condNone(int a, int b, int isret) { return 1; }
-int condSF(int a, int b, int isret) { return !isret || Xstate[a - 1] != 2; }
-int condTC(int a, int b, int isret) { return !isret || Xstate[a - 1] < 2; }
+/* Implementations */
+int condnone(int a, int isret) { return 1; }
+int condsf(int a, int isret) { return !isret || Xstate[a - 1] != PARENT; }
+int condtc(int a, int isret) { return !isret || Xstate[a - 1] < 2; }
 int lt(int a, int b, int c, int d) { return a < c || (a == c && b < d); }
 
 int addpair(int a, int b, int isret, int k, int *chleaf, int *chstate) {
@@ -48,12 +55,13 @@ int addpair(int a, int b, int isret, int k, int *chleaf, int *chstate) {
         // set first pair (a, b) (isret)
         R1[k][0] = a;
         R2[k][0] = b;
-        R3[k][0] = isret;
+        Ch[k][0] = isret;
     }
     return r;
 }
 
 int addcherry(int a, int b, int k) {
+    // Compute the new ARP and check if (a,b) is a candidate extension
     int smallest = 0; // if (a,b) is the smallest
     C[k]         = 1; // set first pair as (a, b)
 
@@ -69,13 +77,13 @@ int addcherry(int a, int b, int k) {
         // process pair (ai, bi) (ci)
         int ai = R1[k - 1][i];
         int bi = R2[k - 1][i];
-        int ci = R3[k - 1][i];
+        int ci = Ch[k - 1][i];
 
         // Case 1: remains invariant
         if (ai != b && bi != b) {
             R1[k][C[k]] = ai;
             R2[k][C[k]] = bi;
-            R3[k][C[k]] = ci;
+            Ch[k][C[k]] = ci;
             C[k]++;
         }
         // Case 2: do nothing
@@ -84,6 +92,8 @@ int addcherry(int a, int b, int k) {
 }
 
 int addretcherry(int a, int b, int k, int *chleaf, int *chstate) {
+    // Compute the new ARP, check if (a,b) is a candidate extension and
+    // recalculate Xstate
     int smallest = 0;  // if (a,b) is the smallest
     int flip     = -1; // index of the flip (-1: not detected, -2: fixed)
     C[k]         = 1;  // set first pair as (a, b)
@@ -101,7 +111,7 @@ int addretcherry(int a, int b, int k, int *chleaf, int *chstate) {
         // process pair (ai, bi) (ci)
         int ai = R1[k - 1][i];
         int bi = R2[k - 1][i];
-        int ci = R3[k - 1][i];
+        int ci = Ch[k - 1][i];
 
         // Case 1: remains invariant
         if (ai != a && ai != b && bi != a && bi != b)
@@ -113,12 +123,12 @@ int addretcherry(int a, int b, int k, int *chleaf, int *chstate) {
                 flip           = addsafe(ai, bi, 1, -2, k);
                 *chleaf        = bi;
                 *chstate       = Xstate[bi - 1];
-                Xstate[bi - 1] = 3;
+                Xstate[bi - 1] = SIBLING;
             } else if (a == bi && b != ai) {
                 flip           = i;
                 *chleaf        = ai;
                 *chstate       = Xstate[ai - 1];
-                Xstate[ai - 1] = 3;
+                Xstate[ai - 1] = SIBLING;
             }
         }
         // Case 3: do nothing
@@ -131,18 +141,19 @@ int addretcherry(int a, int b, int k, int *chleaf, int *chstate) {
 }
 
 int addsafe(int ai, int bi, int ci, int flip, int k) {
+    // When adding a reticulated cherry, handle correctly the flip
     // check if we have to change the flip
     if (flip >= 0 && lt(R2[k - 1][flip], R1[k - 1][flip], ai, bi)) {
         R1[k][C[k]] = R2[k - 1][flip];
         R2[k][C[k]] = R1[k - 1][flip];
-        R3[k][C[k]] = 1;
+        Ch[k][C[k]] = 1;
         C[k]++;
         flip = -2;
     }
     // add (ai, bi) (ci)
     R1[k][C[k]] = ai;
     R2[k][C[k]] = bi;
-    R3[k][C[k]] = ci;
+    Ch[k][C[k]] = ci;
     C[k]++;
 
     // update flip
@@ -151,7 +162,7 @@ int addsafe(int ai, int bi, int ci, int flip, int k) {
 
 void generate(int k) {
     for (int a = 1; a <= N; a++) {
-        int isret = Xstate[a - 1] > 0; // 1: reticulated-cherry, 0: cherry
+        int isret = Xstate[a - 1] != 0; // 1: reticulated-cherry, 0: cherry
 
         // check if we are forced to add a cherry
         if (isret && L - N == k - Xcount)
@@ -159,12 +170,12 @@ void generate(int k) {
 
         for (int b = 1 + a * (!isret); b <= N; b++) {
             // try to add (a, b)
-            if (a == b || !Xstate[b - 1] || !COND(a, b, isret))
+            if (a == b || Xstate[b - 1] == NONE || !COND(a, isret))
                 continue;
 
             int chleaf = 1, chstate = Xstate[0];
             if (addpair(a, b, isret, k, &chleaf, &chstate)) {
-                // it's the smallest, prepare for expanding
+                // it's the smallest, prepare for augmenting
 #ifdef PRINTSEQ
                 S[2 * k]     = a;
                 S[2 * k + 1] = b;
@@ -178,7 +189,7 @@ void generate(int k) {
                     count++;
                     printSeq(k + 1);
                 } else { // continue
-#ifdef ALL
+#ifdef PARTIALS
                     if (Xcount == N) {
                         count++;
                         printSeq(k + 1);
@@ -187,7 +198,7 @@ void generate(int k) {
                     generate(k + 1); // keep going
                 }
                 // undo changes
-				Xstate[a - 1] = stA;
+                Xstate[a - 1] = stA;
                 Xstate[b - 1] = stB;
                 Xcount -= !isret;
             }
@@ -198,6 +209,7 @@ void generate(int k) {
 }
 
 void printSeq(int k) {
+    // NOTE: sequence is stored in reversed order
 #ifdef PRINTSEQ
     for (int i = 2 * k; i > 0; i -= 2)
         printf("(%d,%d)", S[i - 2], S[i - 1]);
@@ -212,17 +224,17 @@ int main(int argc, char *argv[]) {
         C[0]     = 1;
         R1[0][0] = i;
         R2[0][0] = N;
-        R3[0][0] = 0;
+        Ch[0][0] = 0;
 
         Xcount        = 2;
-        Xstate[i - 1] = 1;
-        Xstate[N - 1] = 1;
+        Xstate[i - 1] = TREE;
+        Xstate[N - 1] = TREE;
 
 #ifdef PRINTSEQ
         S[0] = i;
         S[1] = N;
 #endif
-#ifdef ALL
+#ifdef PARTIALS
 #if N == 2
         printSeq(1);
         count++;
@@ -231,7 +243,7 @@ int main(int argc, char *argv[]) {
         generate(1);
 
         // prepare next iteration
-        Xstate[i - 1] = 0;
+        Xstate[i - 1] = NONE;
     }
 #ifdef PRINTCOUNT
     printf("%llu\n", count);

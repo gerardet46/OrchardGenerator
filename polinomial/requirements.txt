@@ -1,4 +1,0 @@
-sympy
-phylonetwork
-pygraphviz
-matplotlib
