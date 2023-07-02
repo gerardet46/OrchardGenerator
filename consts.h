@@ -1,8 +1,9 @@
 #ifndef CONSTS_H
 #define CONSTS_H
 #define N 3
-#define R 6
-#define PRINTSEQ
+#define R 1
 #define PARTIALS
-#define COND condsf
+#define PRINTCOUNT
+#define PRINTSEQ
+#define COND condnone
 #endif /* CONSTS_H */
