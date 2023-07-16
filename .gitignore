@@ -3,4 +3,6 @@ parallel*
 counts.py
 
 # binary/executable files
-generator
+generate
+genfast
+genrandom

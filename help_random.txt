@@ -1,0 +1,21 @@
+Usage: %s [-n n] [-r r] [-c condition] [-hs]
+Generates pseudorandom orchard networks with n leaves and r reticulations.
+
+The following options can be set to modify the behaviour of the generator.
+
+Mandatory:
+-n n                    number of leaves
+-r r                    number of reticulations
+
+Restriction (optional):
+-c, --condition none    generate orchard networks (default)
+-c, --condition tc      restrict to tree-child networks
+-c, --condition sf      restrict to stack-free networks
+
+Misc (optional):
+-s, --samples           number of samples to generate (not guaranteed)
+-h, --help              Display this help message
+
+Examples of usage:
+- Generate 3 tree-child networks with 4 leaves and 2 reticulations
+      %s -n4 -r2 -s4 -c tc

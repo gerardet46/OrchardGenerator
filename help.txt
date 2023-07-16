@@ -1,0 +1,27 @@
+Usage: %s [-n n] [-r r] [-c condition] [-hCSp]
+Generates all orchard networks (in fact MCRSs) over {1,...,n} and r reticulations.
+
+The following options can be set to modify the behaviour of the generator.
+
+Mandatory:
+-n n                    number of leaves
+-r r                    number of reticulations
+
+Restriction (optional):
+-c, --condition none    generate orchard networks (default)
+-c, --condition tc      restrict to tree-child networks
+-c, --condition sf      restrict to stack-free networks
+
+Misc (optional):
+-p, --partials          generate all nets with <=r reticulations
+-S, --print-sequence    print the generated MCRSs to stdout
+-C, --print-count       print the total count of generated MCRSs to stdout
+-m, --more-counts       print count of generated MCRSs for each r=0..R (-p and -C must be activated)
+-h, --help              Display this help message
+
+Examples of usage:
+- Show all orchard networks with 3 leaves and exactly 1 reticulation
+      %s -n3 -r1 -S
+
+- Count all tree-child networks with 6 leaves
+      %s -n6 -r5 -c tc -Cp
