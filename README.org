@@ -4,7 +4,7 @@
 #+options: toc:nil
 
 ** Dependencies
-Just a C compiler, for example =gcc,= and optionally =make= for building.
+Just a C compiler, for example =gcc=, and optionally =make= for building.
 
 ** Files
 This project contain the following files/folders:
