@@ -10,5 +10,7 @@ ContinuationIndentWidth: '4'
 IndentWidth: '4'
 TabWidth: '4'
 UseTab: ForIndentation
+AlignArrayOfStructures: Left
+AllowShortCaseLabelsOnASingleLine: 'true'
 
 ...

@@ -4,47 +4,74 @@
 #+options: toc:nil
 
 ** Dependencies
-Just a C compiler, for example =gcc=, which is the one used in the helper script =generate.sh=
-
-The code is meant to be recompiled when a change in its parameters is needed, keeping the program cleaner and faster.
+Just a C compiler, for example =gcc,= and optionally =make= for building.
 
 ** Files
 This project contain the following files/folders:
 
-- =generator.c=: the C code to generate orchard network.
-- =consts.h=: parameters for the generator.
-- =generate.sh=: helper script to change /consts.h/, recompile and execute /generate.c/.
-- =counts.csv=: table with counts.
+- =generate.c=: the C code to generate orchard networks.
+- =genfast.c=: the same implemented with macros. Recompilation is needed but the generator is much faster.
+- =consts.h=: macros for the /genfast/ generator.
+- =genfast.sh=: interface to recompile and run /genfast/, using the same syntax as in /generate./
+- =genrandom.c=: pseudorandom generator of orchard networks.
+- =counts.csv=: table with counts for generic orchard (and orchard + stack-free) networks.
+- =counts_TC.csv=: table with counts for tree-child networks.
 - =nets/=: text files with all generated MCRSs with at most /r/ reticulations.
+- =help.txt=,  =help_random.txt=: help message for the generator and the random generator, resp.
+
+** Building
+Clone the repo and execute
+#+begin_src bash
+  make
+  # or:
+  cc -O3 -march=native -o generate generate.c
+  cc -O3 -march=native -o genrandom genrandom.c
+#+end_src
+to build the binaries =generate= and =genrandom=.
 
 ** Usage of the generator
-There are two ways to use the generator.
+The usage of the generator with and without macros is the same, just changing the name of the program =generate= to =genfast.sh=. The recommendation is to use =generate= for low values of n+r-1 and =genfast= for high values. The reason is that =genfast= is faster than =generate= but has to be recompiled, so it is more efficient for higher sequence length.
 
-*** Manually
-Change the parameters in =consts.h=, and then execute
-#+begin_src bash
-  gcc -O3 -pipe -o generator generator.c  # compile (and optimize)
-  ./generator  # execute
-#+end_src
+Execute the binary =generate= or the script =genfast.sh= (with a POSIX compliant shell, like bash), which changes the macros, recompiles and executes.
 
-*** Using the helper script
-Execute the script =generate.sh= (with a POSIX compliant shell, like bash), which changes the parameters, recompiles and executes.
-
-The options that can be passed into the script are:
-- =-h, --help=: show help message.
-- =-n n=: the number of leaves (mandatory)
-- =-r r=: the number of reticulations (mandatory)
+*** Flags
+The options that can be passed into =generate= or =genfast.sh= are:
+- =-h, --help=: show help message (/help.txt/).
+- =-n n=: the number of leaves (*mandatory*)
+- =-r r=: the number of reticulations (*mandatory*)
 - =-c, --condition none|tc|sf=: the type of generated sequences. It can be *none* (default, all orchard networks), *sf* (orchard + stack-free) or *tc* (tree-child).
 - =-p, --partials=: generate all networks with *at most* (not with exactly) r reticulations.
 - =-S, --print-sequence=: print the generated MCRSs to stdout.
 - =-C, --print-count=: print the final count.
+- =-m, --more-counts=: make counters for each r=0..R (*-p* and *-C* must be activated)
 
-  Example of use:
+*** Example of usage
 #+begin_src bash
   # show help
-  ./generate.sh --help
+  ./genfast.sh --help
   # show all orchard nets with 3 leaves and exactly 1 reticulation
-  ./generate.sh -n3 -r1 -S
+  ./generate -n3 -r1 -S
   # count all tree-child networks with 6 leaves
-  ./generate.sh -n6 -r5 -c tc -Cp
+  ./genfast.sh -n6 -r5 -c tc -Cp
+#+end_src
+
+** Usage of the random generator
+It is similar to =generate= but with different options. In particular, the sequences generated are always printed and it does not perform any counting.
+
+*** Flags
+The options that can be passed into =genrandom= are:
+- =-h, --help=: show help message (/help.txt/).
+- =-n n=: the number of leaves (*mandatory*)
+- =-r r=: the exact number of reticulations (*mandatory*)
+- =-c, --condition none|tc|sf=: the type of generated sequences. It can be *none* (default, all orchard networks), *sf* (orchard + stack-free) or *tc* (tree-child).
+- =-s, --samples=: number of samples to show (default is 1).
+
+*** Example of usage
+#+begin_src bash
+  # show help
+  ./genrandom --help
+  # generate 1 random orchard network with 3 leaves and 2 reticulations
+  ./genrandom -n3 -r2
+  # generate 5 random tree-child networks with n=5, r=4
+  ./genrandom -n5 -r4 -s5 -c tc
 #+end_src
