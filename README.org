@@ -7,10 +7,10 @@
 Just a C compiler, for example =gcc=, and optionally =make= for building.
 
 ** Files
-This project contain the following files/folders:
+This project contains the following files/folders:
 
 - =generate.c=: the C code to generate orchard networks.
-- =genfast.c=: the same implemented with macros. Recompilation is needed but the generator is much faster.
+- =genfast.c=: the same implemented with macros. Recompilation is needed, but the generator is much faster.
 - =consts.h=: macros for the /genfast/ generator.
 - =genfast.sh=: interface to recompile and run /genfast/, using the same syntax as in /generate./
 - =genrandom.c=: pseudorandom generator of orchard networks.
@@ -20,7 +20,7 @@ This project contain the following files/folders:
 - =help.txt=,  =help_random.txt=: help message for the generator and the random generator, resp.
 
 ** Building
-Clone the repo and execute
+Clone the repo and execute:
 #+begin_src bash
   make
   # or:
